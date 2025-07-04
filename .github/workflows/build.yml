@@ -1,9 +1,9 @@
 name: build
 
 on:
-
   workflow_dispatch:
   push:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,7 +17,13 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0          # Required to access specific commit
+          submodules: false       # We'll manually sync submodules
+
+      - name: Checkout specific commit and update submodules
+        run: |
+          git checkout 3a75ba3edb322a668b02f0d050554cfd7f240f30
+          git submodule update --init --recursive
 
       - uses: szenius/set-timezone@v2.0
         with:
@@ -54,4 +60,4 @@ jobs:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           document: AnyKernel3/O*.zip
-          message: "Build COmpleted"
+          message: "✅ Build for `${{matrix.device}}` completed successfully!"
